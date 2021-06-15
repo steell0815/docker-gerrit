@@ -6,6 +6,8 @@ RUN rpm -i https://gerritforge.com/gerritforge-repo-1-2.noarch.rpm
 
 ADD entrypoint.sh /
 
+ADD https://github.com/davido/gerrit-oauth-provider/releases/download/v3.0.0/gerrit-oauth-provider.jar /var/gerrit/plugins/
+
 # Install OS pre-prequisites, OpenJDK and Gerrit in two subsequent transactions
 # (pre-trans Gerrit script needs to have access to the Java command)
 RUN yum -y install initscripts && \
@@ -17,10 +19,6 @@ RUN yum -y install initscripts && \
 
 # Enable LEGACY security policies by default (for TLS 1.0/1.1 compatibility)
 RUN update-crypto-policies --set LEGACY
-
-# Install plugins
-RUN java -jar /var/gerrit/bin/gerrit.war init --install-all-plugins -d /var/gerrit && \
-    java -jar /var/gerrit/bin/gerrit.war reindex -d /var/gerrit
 
 USER gerrit
 
