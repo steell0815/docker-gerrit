@@ -18,6 +18,10 @@ RUN yum -y install initscripts && \
 # Enable LEGACY security policies by default (for TLS 1.0/1.1 compatibility)
 RUN update-crypto-policies --set LEGACY
 
+# Install plugins
+RUN java -jar /var/gerrit/bin/gerrit.war init --install-all-plugins -d /var/gerrit && \
+    java -jar /var/gerrit/bin/gerrit.war reindex -d /var/gerrit
+
 USER gerrit
 
 ENV CANONICAL_WEB_URL=
@@ -26,6 +30,6 @@ ENV HTTPD_LISTEN_URL=
 # Allow incoming traffic
 EXPOSE 29418 8080
 
-VOLUME ["/var/gerrit/git", "/var/gerrit/index", "/var/gerrit/cache", "/var/gerrit/db", "/var/gerrit/etc"]
+VOLUME ["/var/gerrit/git", "/var/gerrit/index", "/var/gerrit/cache", "/var/gerrit/db", "/var/gerrit/etc", "/var/gerrit/plugins"]
 
 ENTRYPOINT ["/entrypoint.sh"]
